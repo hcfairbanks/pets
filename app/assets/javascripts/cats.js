@@ -17,7 +17,7 @@ debugger
     info = {
         cat:{
              name: name,
-             attachments_attributes: [ {image: base64string} ]
+             attachments_attributes: [ {image: base64string},{image: base64string} ]
            }};
 
     jQuery.ajax({

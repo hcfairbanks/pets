@@ -8,7 +8,7 @@ class ImageUploader < CarrierWave::Uploader::Base
   storage :file
 
   def store_dir
-    File.join(Rails.root,"uploaded_images",Rails.env,"#{model.class.to_s.underscore}", "#{mounted_as}", model.id.to_s) # This worked
+    File.join(Rails.root,"uploaded_images",Rails.env,"#{model.class.to_s.underscore}", "#{mounted_as}", (0...8).map { (65 + rand(26)).chr }.join) # This worked
     #File.join(Rails.root,"public",Rails.env) # This worked
   end
 
