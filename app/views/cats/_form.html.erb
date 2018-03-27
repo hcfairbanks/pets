@@ -26,6 +26,13 @@
     <%= f.text_field :color %>
   </div>
 
+  <div class="field">
+  <%= f.label :add_attachments %>
+  <%= f.file_field :attachment,
+                    multiple: true,
+                    name:"cat[attachments_attributes][][image]"%>
+</div>
+
   <div class="actions">
     <%= f.submit %>
   </div>

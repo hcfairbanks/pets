@@ -24,6 +24,7 @@ class CatsController < ApplicationController
   # POST /cats
   # POST /cats.json
   def create
+    byebug
     @cat = Cat.new(cat_params)
 
     respond_to do |format|
@@ -69,6 +70,9 @@ class CatsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def cat_params
-      params.require(:cat).permit(:name, :age, :color)
+      params.require(:cat).permit(:name,
+                                  :age,
+                                  :color,
+                                  attachments_attributes: [:image])
     end
 end
