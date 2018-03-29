@@ -1,46 +1,4 @@
-https://www.smashingmagazine.com/2018/01/drag-drop-file-uploader-vanilla-js/
-
-
-http://jsfiddle.net/ELcf6/8/
-
-<style>
-#uploader {position:relative; overflow:hidden; width:300px; height:350px; background:transparent; border:2px dashed #e8e8e8;cursor:pointer;padding:5px;color:#555;font-family:'Segoe UI';font-weight:bold;}
-
-#uploader:hover{color:#999;}
-
-#filePhoto{
-    display:none;
-}
-
-#uploader img{
-    position:absolute;
-    width:312px;
-    height:362px;
-    top:-1px;
-    left:-1px;
-    z-index:-1;
-    border:none;
-    background-color: #eee;
-}
-</style>
-
-
-
-
-<div id="drop-area">
-  <form class="my-form">
-    <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
-    <input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)">
-    <label class="button" for="fileElem">Select some files</label>
-  </form>
-</div>
-
 <p id="notice"><%= notice %></p>
-<div id="uploader" onclick="$('#filePhoto').click()">
-    click here or drag here your images for preview and set userprofile_picture data
-    <img src=""/>
-</div>
-<input type="file" name="userprofile_picture"  id="filePhoto" />
 <h1>Cats</h1>
 
 <table>
@@ -70,44 +28,156 @@ http://jsfiddle.net/ELcf6/8/
 <br>
 
 <%= link_to 'New Cat', new_cat_path %>
+<hr/>
+<%= link_to "Refresh Cats Index", cats_url %>
+<br/>
+
+<h2>Create a new cat here</h2
+<form id="upload" action="upload.php" method="POST" enctype="multipart/form-data">
+  <fieldset>
+    <legend>HTML File Upload</legend>
+    <input type="hidden" id="MAX_FILE_SIZE" name="MAX_FILE_SIZE" value="300000" />
+    <div>
+    	<label for="fileselect">Files to upload:</label>
+    	<input type="file" id="fileselect" name="fileselect[]" multiple="multiple" />
+    	<div id="filedrag">or drop files here<div id="img_holder"></div></div>
+    </div>
+    <div id="submitbutton">
+    	<button type="submit">Upload Files</button>
+    </div>
+  </fieldset>
+</form>
+New Cat Name:<br/>
+<input type="text" id="new_cat_name" size="40">
+<button type="button" onclick="createCat();">Create Cat</button>
+
+<div id="messages">
+</div>
+
+<br/>
+<br/>https://stackoverflow.com/questions/18101673/jquery-get-all-src-of-images-in-div-and-put-into-field
+<br/>https://www.sitepoint.com/html5-file-drag-and-drop/
+<hr/>
+
+<style>
+  #filedrag
+  {
+    display: none;
+    font-weight: bold;
+    text-align: center;
+    padding: 1em 0;
+    margin: 1em 0;
+    color: #555;
+    border: 2px dashed #555;
+    border-radius: 7px;
+    cursor: default;
+  }
+
+  #filedrag.hover
+  {
+    color: #f00;
+    border-color: #f00;
+    border-style: solid;
+    box-shadow: inset 0 3px 4px #888;
+  }
+</style>
 <script>
-var imageLoader = document.getElementById('filePhoto');
-    imageLoader.addEventListener('change', handleImage, false);
+  // getElementById
+  function $id(id) {
+    return document.getElementById(id);
+  }
+  // output information
+  function Output(msg) {
+    var m = $id("messages");
+    m.innerHTML = msg + m.innerHTML;
+  }
+  // call initialization file
+  if (window.File && window.FileList && window.FileReader) {
+    Init();
+  }
+  // initialize
+  function Init() {
+    var fileselect = $id("fileselect"),
+    filedrag = $id("filedrag"),
+    submitbutton = $id("submitbutton");
+    // file select
+    fileselect.addEventListener("change", FileSelectHandler, false);
 
-function handleImage(e) {
-    var reader = new FileReader();
-    reader.onload = function (event) {
-        $('#uploader img').attr('src',event.target.result);
+  	// is XHR2 available?
+    var xhr = new XMLHttpRequest();
+    if (xhr.upload) {
+      // file drop
+      filedrag.addEventListener("dragover", FileDragHover, false);
+      filedrag.addEventListener("dragleave", FileDragHover, false);
+      filedrag.addEventListener("drop", FileSelectHandler, false);
+      filedrag.style.display = "block";
+      // remove submit button
+      submitbutton.style.display = "none";
     }
-    reader.readAsDataURL(e.target.files[0]);
+  }
+  // file drag hover
+  function FileDragHover(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    e.target.className = (e.type == "dragover" ? "hover" : "");
+  }
 
-}
+  // file selection
+  function FileSelectHandler(e) {
+  	// cancel event and hover styling
+  	FileDragHover(e);
+  	// fetch FileList object
+  	var files = e.target.files || e.dataTransfer.files;
+  	for (var i = 0; i < files.length; ++i){
+    	reader = new FileReader();
+  		console.log( reader.readAsDataURL(files[i]) )
+  	  reader.onload = function (event) {
+  			var img_holder_div = $("#img_holder")[0];
+  			var img = document.createElement("img");
+  			img.src = event.target.result;
+  	    img_holder_div.appendChild(img);
+  		};
+  	}
+    // process all File objects
+    for (var i = 0, f; f = files[i]; i++) {
+      ParseFile(f);
+    }
+  }
 
-var dropbox;
-dropbox = document.getElementById("uploader");
-dropbox.addEventListener("dragenter", dragenter, false);
-dropbox.addEventListener("dragover", dragover, false);
-dropbox.addEventListener("drop", drop, false);
+  function ParseFile(file) {
+    Output(
+      "<p>File information: <strong>" + file.name +
+      "</strong> type: <strong>" + file.type +
+      "</strong> size: <strong>" + file.size +
+      "</strong> bytes</p>"
+    );
+  }
 
-function dragenter(e) {
-  e.stopPropagation();
-  e.preventDefault();
-}
 
-function dragover(e) {
-  e.stopPropagation();
-  e.preventDefault();
-}
-
-function drop(e) {
-  e.stopPropagation();
-  e.preventDefault();
-  //you can check e's properties
-  //console.log(e);
-  var dt = e.dataTransfer;
-  var files = dt.files;
-
-  //this code line fires your 'handleImage' function (imageLoader change event)
-  imageLoader.files = files;
-}
+  function createCat(){
+    var images = $('#img_holder').find('img').map(function() { return this.src; }).get()
+    cat_images = []
+    for (var i = 0; i < images.length; ++i){
+      cat_images.push( {image: images[i] } )
+    }
+    new_cat_name = $("#new_cat_name").val();
+    info = {
+      cat:{
+        name: new_cat_name,
+        attachments_attributes: cat_images
+      }
+    };
+  	jQuery.ajax({
+        url: "http://localhost:3000/cats/",
+        type: "POST",
+        dataType: "JSON",
+        data: info,
+        success: function (response) {
+          // You can see the full response object in
+          // Chrome developer tools, console
+          // console.log(response)
+          alert("Name: " + response.name + " ID:" + response.id );
+        }
+      });
+    }
 </script>
