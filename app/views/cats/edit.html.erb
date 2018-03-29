@@ -28,12 +28,22 @@
 
 </form>
 
+<script>
+
+function rager(){
+	var src = $('#fuck').attr('src');
+	//console.log("##########################################")
+	console.log(src)
+	alert(src);
+}
+</script>
+<button type="button" onclick="rager();">Click Me!</button>
+<button type="button" onclick="createCat();">Create Cat</button>
+
 <div id="messages">
 <p>Status Messages</p>
 </div>
 <p>https://www.sitepoint.com/html5-file-drag-and-drop/</p>
-<img src="smiley.gif" id="avatar_img" alt="Smiley face" height="42" width="42">
-<img src="smiley.gif" id="avatar_img_2" alt="Smiley face" height="42" width="42">
 <div id="test1234"></div>
 
 
@@ -60,112 +70,129 @@
 }
 </style>
 <script>
-// getElementById
-function $id(id) {
-	return document.getElementById(id);
-}
+	// getElementById
+	function $id(id) {
+		return document.getElementById(id);
+	}
+	// output information
+	function Output(msg) {
+		var m = $id("messages");
+		m.innerHTML = msg + m.innerHTML;
+	}
+	// call initialization file
+	if (window.File && window.FileList && window.FileReader) {
+		Init();
+	}
+	// initialize
+	function Init() {
 
-//
-// output information
-function Output(msg) {
-	var m = $id("messages");
-	m.innerHTML = msg + m.innerHTML;
-}
-
-
-// call initialization file
-if (window.File && window.FileList && window.FileReader) {
-	Init();
-}
-
-//
-// initialize
-function Init() {
-
-	var fileselect = $id("fileselect"),
+		var fileselect = $id("fileselect"),
 		filedrag = $id("filedrag"),
 		submitbutton = $id("submitbutton");
+		// file select
+		fileselect.addEventListener("change", FileSelectHandler, false);
 
-	// file select
-	fileselect.addEventListener("change", FileSelectHandler, false);
-
-	// is XHR2 available?
-	var xhr = new XMLHttpRequest();
-	if (xhr.upload) {
-
-		// file drop
-		filedrag.addEventListener("dragover", FileDragHover, false);
-		filedrag.addEventListener("dragleave", FileDragHover, false);
-		filedrag.addEventListener("drop", FileSelectHandler, false);
-		filedrag.style.display = "block";
-
-		// remove submit button
-		submitbutton.style.display = "none";
+		// is XHR2 available?
+		var xhr = new XMLHttpRequest();
+		if (xhr.upload) {
+			// file drop
+			filedrag.addEventListener("dragover", FileDragHover, false);
+			filedrag.addEventListener("dragleave", FileDragHover, false);
+			filedrag.addEventListener("drop", FileSelectHandler, false);
+			filedrag.style.display = "block";
+			// remove submit button
+			submitbutton.style.display = "none";
+		}
 	}
 
-}
-
-
-// file drag hover
-function FileDragHover(e) {
-
-	e.stopPropagation();
-	e.preventDefault();
-	e.target.className = (e.type == "dragover" ? "hover" : "");
-}
-
-
-// file selection
-function FileSelectHandler(e) {
-
-	// cancel event and hover styling
-	FileDragHover(e);
-
-	// fetch FileList object
-	var files = e.target.files || e.dataTransfer.files;
-
-  file = e.dataTransfer.files[1],
-	files = e.dataTransfer.files
-
-
-	for (var i = 0; i < files.length; ++i){
-
-  	reader = new FileReader();
-		reader.readAsDataURL(files[i]);
-	  reader.onload = function (event) {
-
-	    console.log(event.target.result);
-	    //holder.style.background = 'url(' + event.target.result + ') no-repeat center';
-			var img_div = $("#test1234")[0];
-			var img = document.createElement("img");
-	    img.src = event.target.result;
-	    img_div.appendChild(img);
-
-		};
+	// file drag hover
+	function FileDragHover(e) {
+		e.stopPropagation();
+		e.preventDefault();
+		e.target.className = (e.type == "dragover" ? "hover" : "");
 	}
 
-	console.log(file);
-  reader.readAsDataURL(file);
-
-
-	// process all File objects
-	for (var i = 0, f; f = files[i]; i++) {
-		ParseFile(f);
+	// file selection
+	function FileSelectHandler(e) {
+		// cancel event and hover styling
+		FileDragHover(e);
+		// fetch FileList object
+		var files = e.target.files || e.dataTransfer.files;
+		for (var i = 0; i < files.length; ++i){
+	  	reader = new FileReader();
+			console.log( reader.readAsDataURL(files[i]) )
+		  reader.onload = function (event) {
+				var img_div = $("#test1234")[0];
+				var img = document.createElement("img");
+				img.src = event.target.result;
+		    img_div.appendChild(img);
+			};
+		}
+		// process all File objects
+		for (var i = 0, f; f = files[i]; i++) {
+			ParseFile(f);
+		}
 	}
 
-}
+	function ParseFile(file) {
+	  //  var img = $("#avatar_img")[0];
+	  //  img.src = event.target.result;
+		Output(
+			"<p>File information: <strong>" + file.name +
+			"</strong> type: <strong>" + file.type +
+			"</strong> size: <strong>" + file.size +
+			"</strong> bytes</p>"
+		);
+	}
 
-function ParseFile(file) {
 
-  // var img = $("#avatar_img")[0];
-  //       img.src = event.target.result;
+	function createCat(){
+		var images = $('#test1234').find('img').map(function() { return this.src; }).get()
 
-	Output(
-		"<p>File information: <strong>" + file.name +
-		"</strong> type: <strong>" + file.type +
-		"</strong> size: <strong>" + file.size +
-		"</strong> bytes</p>"
-	);
 
-}
+
+
+
+
+cat_images = []
+
+		for (var i = 0; i < images.length; ++i){
+			cat_images.push( {image: images[i] } )
+		}
+
+
+		info = {
+				cat:{
+						 name: "test 8:32",
+						 attachments_attributes: cat_images
+					 }};
+
+
+
+
+
+jQuery.ajax({
+		url: "http://localhost:3000/cats/",
+		type: "POST",
+		dataType: "JSON",
+		data: info,
+		success: function (response) {
+			// You can see the full response object in
+			// Chrome developer tools, console
+			// console.log(response)
+			alert("Name: " + response.name + " ID:" + response.id );
+		}
+});
+
+
+
+	}
+
 </script>
+
+
+
+<br/>
+<br/>https://stackoverflow.com/questions/18101673/jquery-get-all-src-of-images-in-div-and-put-into-field
+<br/>var images = $('#imageHolder').find('img').map(function() { return this.src; }).get()
+<br/>need to check on the array size once it hits the controller, accepts_nested_attributes may not be used after all

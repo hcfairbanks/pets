@@ -47,3 +47,10 @@ debugger
 
 //this is what it looks like in the bas64 app
 //Parameters: {"cat"=>{"name"=>"test", "picture"=>"test"}}
+
+
+
+//https://stackoverflow.com/questions/3357553/how-do-i-store-an-array-in-localstorage
+
+//localStorage only supports strings. Use JSON.stringify() and JSON.parse().
+//var names = []; names[0] = prompt("New member name?"); localStorage.setItem("names", JSON.stringify(names)); //... var storedNames = JSON.parse(localStorage.getItem("names"));
