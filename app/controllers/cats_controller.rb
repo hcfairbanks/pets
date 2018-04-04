@@ -1,5 +1,6 @@
 class CatsController < ApplicationController
   before_action :set_cat, only: [:show, :edit, :update, :destroy]
+  #skip_before_action :verify_authenticity_token
 
   # GET /cats
   # GET /cats.json
@@ -73,6 +74,6 @@ class CatsController < ApplicationController
       params.require(:cat).permit(:name,
                                   :age,
                                   :color,
-                                  attachments_attributes: [:image])
+                                  attachments_attributes: [:image,:priority])
     end
 end

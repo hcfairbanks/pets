@@ -1,6 +1,6 @@
 <p id="notice"><%= notice %></p>
 <h1>Cats</h1>
-
+<h1>https://jqueryui.com/sortable/#display-grid</h1>
 <table>
   <thead>
     <tr>
@@ -37,11 +37,22 @@
   <fieldset>
     <legend>HTML File Upload</legend>
     <input type="hidden" id="MAX_FILE_SIZE" name="MAX_FILE_SIZE" value="300000" />
+
+
     <div>
     	<label for="fileselect">Files to upload:</label>
     	<input type="file" id="fileselect" name="fileselect[]" multiple="multiple" />
-    	<div id="filedrag">or drop files here<div id="img_holder"></div></div>
+
+    	<div id="filedrag" style="padding:55px;">
+
+        <div id="img_holder">
+          <ul id="sortable">
+          </ul>
+        </div>
+
+      </div>
     </div>
+
     <div id="submitbutton">
     	<button type="submit">Upload Files</button>
     </div>
@@ -59,7 +70,23 @@ New Cat Name:<br/>
 <br/>https://www.sitepoint.com/html5-file-drag-and-drop/
 <hr/>
 
+
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="https://jqueryui.com/resources/demos/style.css">
+
+
+
+
 <style>
+
+.transx
+{
+    background-color: red;
+    opacity: 0.5;
+    filter: Alpha(opacity=50);
+    z-index: -1;
+}
+
   #filedrag
   {
     display: none;
@@ -80,8 +107,16 @@ New Cat Name:<br/>
     border-style: solid;
     box-shadow: inset 0 3px 4px #888;
   }
+  #sortable { list-style-type: none; margin: 0; padding: 0; width: 450px; }
+  #sortable li { margin: 3px 3px 3px 0; padding: 1px; float: left; width: 100px; height: 90px; font-size: 4em; text-align: center; }
 </style>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
+$( function() {
+   $( "#sortable" ).sortable();
+   $( "#sortable" ).disableSelection();
+ } );
   // getElementById
   function $id(id) {
     return document.getElementById(id);
@@ -130,12 +165,28 @@ New Cat Name:<br/>
   	var files = e.target.files || e.dataTransfer.files;
   	for (var i = 0; i < files.length; ++i){
     	reader = new FileReader();
-  		console.log( reader.readAsDataURL(files[i]) )
-  	  reader.onload = function (event) {
-  			var img_holder_div = $("#img_holder")[0];
-  			var img = document.createElement("img");
-  			img.src = event.target.result;
-  	    img_holder_div.appendChild(img);
+  		console.log( reader.readAsDataURL( files[i] ) )
+      reader.fileName = files[i].name
+      reader.fileArray = []
+      reader.onload = function (event,) {
+      //  			var img_holder_div = $("#img_holder")[0];
+      //  			var img = document.createElement("img");
+      var spanx =  document.createElement("span");
+      spanx.innerHTML = "test"
+      spanx.className = "transx"
+      var ul = $("#sortable")[0];
+      var li = document.createElement("li");
+      var img = document.createElement("img");
+      img.width = "100"
+      img.src = event.target.result;
+      img.setAttribute('data-img-name', event.target.fileName);
+
+
+      li.appendChild(img);
+      li.appendChild(spanx)
+      ul.appendChild(li);
+
+  	    //img_holder_div.appendChild(img);
   		};
   	}
     // process all File objects
@@ -155,11 +206,16 @@ New Cat Name:<br/>
 
 
   function createCat(){
-    var images = $('#img_holder').find('img').map(function() { return this.src; }).get()
+    var images = $('#img_holder').find('img').map(function() { return { source: this.src, name: $(this).attr("data-img-name") }  }).get()
+  //  var names  = $('#img_holder').find('img').map(function() { return $(this).attr("data-img-name") }).get()
+
     cat_images = []
+
     for (var i = 0; i < images.length; ++i){
-      cat_images.push( {image: images[i] } )
+      cat_images.push( {image: images[i]["source"], priority: i } )
+      //cat_images.push( {image: images[i], priority: i, name: images[i]["name"] } )
     }
+
     new_cat_name = $("#new_cat_name").val();
     info = {
       cat:{
@@ -167,6 +223,7 @@ New Cat Name:<br/>
         attachments_attributes: cat_images
       }
     };
+
   	jQuery.ajax({
         url: "http://localhost:3000/cats/",
         type: "POST",
@@ -176,8 +233,12 @@ New Cat Name:<br/>
           // You can see the full response object in
           // Chrome developer tools, console
           // console.log(response)
-          alert("Name: " + response.name + " ID:" + response.id );
+          window.location.href = "/cats/" + response.id;
+          //alert("Name: " + response.name + " ID:" + response.id );
         }
       });
+
     }
+
+
 </script>

@@ -10,13 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180326013459) do
+ActiveRecord::Schema.define(version: 20180401141257) do
 
   create_table "attachments", force: :cascade do |t|
     t.string   "image"
     t.integer  "cat_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer  "priority"
     t.index ["cat_id"], name: "index_attachments_on_cat_id"
   end
 
