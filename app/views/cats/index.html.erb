@@ -43,7 +43,7 @@
     	<label for="fileselect">Files to upload:</label>
     	<input type="file" id="fileselect" name="fileselect[]" multiple="multiple" />
 
-    	<div id="filedrag" style="padding:55px;">
+    	<div id="filedrag" style="padding-left:50%;">
 
         <div id="img_holder">
           <ul id="sortable">
@@ -114,9 +114,28 @@ New Cat Name:<br/>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
 $( function() {
-   $( "#sortable" ).sortable();
+// http://api.jqueryui.com/sortable/#entry-examples
+// http://jqueryui.com/sortable/
+
+  $( "#sortable" ).sortable(); // This will work  for create
+
+
+   // This will work for edit
+   // $(  "#sortable"  ).sortable({
+   //   stop: function( event, ui ) {
+   //     alert('hello');
+   //   }
+   // });
+
+
    $( "#sortable" ).disableSelection();
+
+
+
  } );
+
+//$( ".selector" ).on( "sortstop", function( event, ui ) {alert('hello World')} );
+
   // getElementById
   function $id(id) {
     return document.getElementById(id);
